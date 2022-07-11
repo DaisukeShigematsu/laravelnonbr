@@ -1,37 +1,23 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
-Route::get('/', function () {
-    return view('home');
-})->middleware('auth');
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DataUserController;
+use App\Http\Controllers\TimestampController;
+use App\Http\Controllers\RestController;
 
 
-Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
-Route::post('/login', 'Auth\LoginController@login');
-Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
+Route::get('/dashboard', function () {return view('dashboard');})->middleware(['auth'])->name('dashboard');
+Route::get('/', function () {return view('dashboard');})->middleware('auth');
 
 
-Route::group(['middleware' => ['auth', 'can:admin']], function() {
-    Route::get('admin/user/index', 'UserController@index')->name('admin/user/index');
-    Route::get('admin/user/show/{id}', 'UserController@show')->name('admin/user/show');
-});
+Route::post('/Timestamp/start', [TimestampController::class, 'start'])->name('Timestamp.start');
+Route::post('/Timestamp/end', [TimestampController::class, 'end'])->name('Timestamp.end');
+Route::get('/date', [TimestampController::class, 'index'])->name('Timestamp.date');
 
-Route::group(['middleware' => 'auth'], function() {
-    Route::post('/punchin', 'TimestampsController@punchIn')->name('timestamp/punchin');
-    Route::post('/punchout', 'TimestampsController@punchOut')->name('timestamp/punchout');
-});
+Route::post('/rest/start', [RestController::class, 'start'])->name('rest.start');
+Route::post('/rest/end', [RestController::class, 'end'])->name('rest.end');
 
-// Other
-Route::get('/{any}', function() {
-    return view('home');
-})->middleware('auth')->where('any','.*');
+
+
+
+require __DIR__.'/auth.php';
